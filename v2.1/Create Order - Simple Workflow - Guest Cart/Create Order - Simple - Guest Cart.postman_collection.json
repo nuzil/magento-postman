@@ -1,0 +1,161 @@
+{
+	"info": {
+		"_postman_id": "440c06a7-5cd9-4cd8-8f50-d16c2225e7f0",
+		"name": "Create Order - Simple - Guest Cart",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Cart",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8d62edb4-f0d0-4460-916f-51aca258fbbe",
+						"exec": [
+							"responseBody = responseBody.replace('\"',\"\");",
+							"responseBody = responseBody.replace('\"',\"\");",
+							"postman.setEnvironmentVariable(\"cart_id\", responseBody);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"disabled": false,
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{URL}}rest/V1/guest-carts",
+					"host": [
+						"{{URL}}rest"
+					],
+					"path": [
+						"V1",
+						"guest-carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Product To Cart",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"cartItem\": {\n        \"quote_id\": \"{{cart_id}}\",\n        \"sku\": \"{{test_sku}}\",\n        \"qty\": 1\n    }\n}"
+				},
+				"url": {
+					"raw": "{{URL}}rest/V1/guest-carts/{{cart_id}}/items",
+					"host": [
+						"{{URL}}rest"
+					],
+					"path": [
+						"V1",
+						"guest-carts",
+						"{{cart_id}}",
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Shipping information",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"addressInformation\": {\n        \"shippingAddress\": {\n            \"country_id\": \"CA\",\n            \"street\": [\n                \"Chakala,Kalyan (e)\"\n            ],\n            \"postcode\": \"K1Y 2B7\",\n            \"city\": \"Ottava\",\n            \"firstname\": \"Sameer\",\n            \"lastname\": \"Sawant\",\n            \"email\": \"test@mailinator.com\",\n            \"telephone\":\"123123123213\",\n            \"region\": \"BC\"\n        },\n        \"billingAddress\": {\n            \"country_id\": \"CA\",\n            \"street\": [\n                \"Chakala,Kalyan (e)\"\n            ],\n            \"company\": \"abc\",\n            \"postcode\": \"K1Y 2B7\",\n            \"city\": \"Ottava\",\n            \"firstname\": \"Sameer\",\n            \"lastname\": \"Sawant\",\n            \"email\": \"test@mailinator.com\",\n            \"vat_id\": \"\",\n            \"telephone\":\"123123123213\",\n            \"region\": \"BC\"\n        },\n        \"shipping_method_code\": \"flatrate\",\n        \"shipping_carrier_code\": \"flatrate\"\n    }\n   \n}"
+				},
+				"url": {
+					"raw": "{{URL}}rest/V1/guest-carts/{{cart_id}}/shipping-information",
+					"host": [
+						"{{URL}}rest"
+					],
+					"path": [
+						"V1",
+						"guest-carts",
+						"{{cart_id}}",
+						"shipping-information"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Place Order",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"paymentMethod\": {\n        \"method\": \"checkmo\"\n    }\n}"
+				},
+				"url": {
+					"raw": "{{URL}}rest/V1/guest-carts/{{cart_id}}/order",
+					"host": [
+						"{{URL}}rest"
+					],
+					"path": [
+						"V1",
+						"guest-carts",
+						"{{cart_id}}",
+						"order"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "479805fb-ff95-4855-80ed-f3b8ccd5deab",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "270ebde5-7d68-491e-b6c0-9a42c59db184",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
