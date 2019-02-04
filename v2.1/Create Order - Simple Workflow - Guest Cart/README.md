@@ -9,5 +9,7 @@ This collection provide collection for create new order for a guest user.
 * Place order
 
 ### Variables you have to define
+
 URL - Your Magento Base Url
+
 test_sku - SKU of product that will be added to cart
