@@ -1,0 +1,627 @@
+{
+	"info": {
+		"_postman_id": "4822a244-1e8a-443f-9fe1-d49e59eebe4a",
+		"name": "Magento Bulk Sales",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Bulk Orders Runner",
+			"item": [
+				{
+					"name": "Post Order Bulk",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c616e850-f3ac-481e-867a-64a30feabac9",
+								"exec": [
+									"var itemsLimitT = pm.environment.get('itemsLimit');",
+									"var items = [];",
+									"var itemSkeletonJson = '{\"entity\":{\"increment_id\":\"\",\"base_grand_total\":30,\"base_subtotal\":30,\"base_total_due\":30,\"customer_is_guest\":1,\"customer_email\":\"1_test@null.loc\",\"customer_firstname\":\"Firstname\",\"customer_lastname\":\"Lastname\",\"state\":\"closed\",\"status\":\"closed\",\"subtotal\":30,\"grand_total\":30,\"items\":[{\"base_price\":30,\"price\":30,\"product_type\":\"simple\",\"sku\":\"test22_\",\"qty_ordered\":1,\"row_total\":30,\"row_total_incl_tax\":30,\"base_row_total_incl_tax\":0}],\"billing_address\":{\"address_type\":\"billing\",\"city\":\"Los Angeles\",\"country_id\":\"US\",\"email\":\"customer@null.com\",\"firstname\":\"firstname\",\"lastname\":\"lastname\",\"postcode\":\"11111\",\"region\":\"CA\",\"region_code\":\"CA\",\"street\":[\"street\"],\"telephone\":\"11111111\"},\"payment\":{\"method\":\"checkmo_test\"},\"extension_attributes\":{\"shipping_assignments\":[{\"shipping\":{\"address\":{\"address_type\":\"shipping\",\"city\":\"Los Angeles\",\"country_id\":\"US\",\"email\":\"1_test@null.loc\",\"firstname\":\"firstname\",\"lastname\":\"lastname\",\"postcode\":\"11111\",\"region\":\"CA\",\"region_code\":\"CA\",\"street\":[\"street\"],\"telephone\":\"11111111\"},\"total\":[]},\"items\":[{\"base_price\":30,\"price\":30,\"product_type\":\"simple\",\"sku\":\"test22_\",\"qty_ordered\":1,\"row_total\":30,\"row_total_incl_tax\":30}]}]}}}';",
+									"",
+									"var itemsCount = 0;",
+									"while(itemsLimitT > itemsCount){",
+									"    var orderIncId = parseInt(pm.environment.get('orderIncId'));",
+									"    orderIncId++;",
+									"    pm.environment.set('orderIncId', orderIncId);",
+									"    ",
+									"    var item = JSON.parse(itemSkeletonJson);",
+									"    item.entity.increment_id = orderIncId;",
+									"    items[itemsCount] = item;",
+									"    ",
+									"    itemsCount++;",
+									"}",
+									"",
+									"var itemsJsonString = JSON.stringify(items);",
+									"pm.environment.set('orderItems', itemsJsonString);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{orderItems}}"
+						},
+						"url": {
+							"raw": "{{URL}}rest/async/bulk/V1/orders/",
+							"host": [
+								"{{URL}}rest"
+							],
+							"path": [
+								"async",
+								"bulk",
+								"V1",
+								"orders",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Invoice Bulk",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4bcc2ca0-7ca2-4a82-89dc-18c0ccd294e9",
+								"exec": [
+									"var itemsLimitT = pm.environment.get('itemsLimit');",
+									"var items = [];",
+									"var itemSkeletonJson = '{\"entity\":{\"base_grand_total\":30,\"grand_total\":30,\"shipping_amount\":0,\"subtotal\":30,\"subtotal_incl_tax\":30,\"tax_amount\":0,\"total_qty\":1,\"increment_id\":\"\",\"items\":[{\"base_price\":30,\"price\":30,\"row_total\":30,\"row_total_incl_tax\":30,\"sku\":\"test22_\",\"qty\":1}],\"extension_attributes\":{\"order_increment_id\":\"\"}}}';",
+									"",
+									"var itemsCount = 0;",
+									"",
+									"var orderIncId = parseInt(pm.environment.get('orderIncId'));",
+									"    orderIncId = orderIncId - itemsLimitT;//reset order increment to init value",
+									"    ",
+									"while(itemsLimitT > itemsCount){",
+									"    orderIncId++;",
+									"    pm.environment.set('orderIncId', orderIncId);",
+									"    ",
+									"    var invoiceIncId = parseInt(pm.environment.get('invoiceIncId'));",
+									"    invoiceIncId++;",
+									"    pm.environment.set('invoiceIncId', invoiceIncId);",
+									"    ",
+									"    var item = JSON.parse(itemSkeletonJson);",
+									"    item.entity.increment_id = invoiceIncId;",
+									"    item.entity.extension_attributes.order_increment_id = orderIncId;",
+									"    items[itemsCount] = item;",
+									"    ",
+									"    itemsCount++;",
+									"}",
+									"",
+									"var itemsJsonString = JSON.stringify(items);",
+									"pm.environment.set('invoiceItems', itemsJsonString);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{invoiceItems}}"
+						},
+						"url": {
+							"raw": "{{URL}}rest/async/bulk/V1/invoices/",
+							"host": [
+								"{{URL}}rest"
+							],
+							"path": [
+								"async",
+								"bulk",
+								"V1",
+								"invoices",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Creditmemo Bulk",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "57693067-2252-4e6a-9316-94626889c788",
+								"exec": [
+									"var itemsLimitT = pm.environment.get('itemsLimit');",
+									"var items = [];",
+									"var itemSkeletonJson = '{\"entity\":{\"adjustment\":0,\"adjustment_negative\":0,\"adjustment_positive\":0,\"base_adjustment\":0,\"base_adjustment_negative\":0,\"base_adjustment_positive\":0,\"base_discount_amount\":0,\"base_grand_total\":0,\"base_discount_tax_compensation_amount\":0,\"base_shipping_amount\":0,\"base_shipping_incl_tax\":0,\"base_shipping_tax_amount\":0,\"base_subtotal\":0,\"base_subtotal_incl_tax\":0,\"base_tax_amount\":0,\"grand_total\":30,\"shipping_address_id\":2,\"state\":2,\"subtotal\":30,\"subtotal_incl_tax\":30,\"increment_id\":\"\",\"items\":[{\"base_price\":30,\"price\":30,\"qty\":1,\"row_total\":30,\"row_total_incl_tax\":30,\"sku\":\"test22_\"}],\"extension_attributes\":{\"order_increment_id\":\"\"}}}';",
+									"",
+									"var itemsCount = 0;",
+									"",
+									"var orderIncId = parseInt(pm.environment.get('orderIncId'));",
+									"    orderIncId = orderIncId - itemsLimitT;//reset order increment to init value",
+									"    ",
+									"while(itemsLimitT > itemsCount){",
+									"    orderIncId++;",
+									"    pm.environment.set('orderIncId', orderIncId);",
+									"    ",
+									"    var creditmemoIncId = parseInt(pm.environment.get('creditmemoIncId'));",
+									"    creditmemoIncId++;",
+									"    pm.environment.set('creditmemoIncId', creditmemoIncId);",
+									"    ",
+									"    var item = JSON.parse(itemSkeletonJson);",
+									"    item.entity.increment_id = creditmemoIncId;",
+									"    item.entity.extension_attributes.order_increment_id = orderIncId;",
+									"    items[itemsCount] = item;",
+									"    ",
+									"    itemsCount++;",
+									"}",
+									"",
+									"var itemsJsonString = JSON.stringify(items);",
+									"pm.environment.set('creditmemoItems', itemsJsonString);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{creditmemoItems}}"
+						},
+						"url": {
+							"raw": "{{URL}}rest/async/bulk/V1/creditmemo/",
+							"host": [
+								"{{URL}}rest"
+							],
+							"path": [
+								"async",
+								"bulk",
+								"V1",
+								"creditmemo",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "cd7b2cbb-faa5-4f6c-be7e-47ed66443edf",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "04cb224e-95f9-49e3-bbef-ec0a8b1f9bea",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Bulk Orders",
+			"item": [
+				{
+					"name": "BulkStatus",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}rest/V1/bulk/:bulkUuid/detailed-status",
+							"host": [
+								"{{URL}}rest"
+							],
+							"path": [
+								"V1",
+								"bulk",
+								":bulkUuid",
+								"detailed-status"
+							],
+							"variable": [
+								{
+									"key": "bulkUuid",
+									"value": "{{bulkUuid}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Order Bulk",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c616e850-f3ac-481e-867a-64a30feabac9",
+								"exec": [
+									"var itemsLimitT = pm.environment.get('itemsLimit');",
+									"var items = [];",
+									"var itemSkeletonJson = '{\"entity\":{\"increment_id\":\"\",\"base_grand_total\":30,\"base_subtotal\":30,\"base_total_due\":30,\"customer_is_guest\":1,\"customer_email\":\"1_test@null.loc\",\"customer_firstname\":\"Firstname\",\"customer_lastname\":\"Lastname\",\"state\":\"closed\",\"status\":\"closed\",\"subtotal\":30,\"grand_total\":30,\"items\":[{\"base_price\":30,\"price\":30,\"product_type\":\"simple\",\"sku\":\"test22_\",\"qty_ordered\":1,\"row_total\":30,\"row_total_incl_tax\":30,\"base_row_total_incl_tax\":0}],\"billing_address\":{\"address_type\":\"billing\",\"city\":\"Los Angeles\",\"country_id\":\"US\",\"email\":\"customer@null.com\",\"firstname\":\"firstname\",\"lastname\":\"lastname\",\"postcode\":\"11111\",\"region\":\"CA\",\"region_code\":\"CA\",\"street\":[\"street\"],\"telephone\":\"11111111\"},\"payment\":{\"method\":\"checkmo_test\"},\"extension_attributes\":{\"shipping_assignments\":[{\"shipping\":{\"address\":{\"address_type\":\"shipping\",\"city\":\"Los Angeles\",\"country_id\":\"US\",\"email\":\"1_test@null.loc\",\"firstname\":\"firstname\",\"lastname\":\"lastname\",\"postcode\":\"11111\",\"region\":\"CA\",\"region_code\":\"CA\",\"street\":[\"street\"],\"telephone\":\"11111111\"},\"total\":[]},\"items\":[{\"base_price\":30,\"price\":30,\"product_type\":\"simple\",\"sku\":\"test22_\",\"qty_ordered\":1,\"row_total\":30,\"row_total_incl_tax\":30}]}]}}}';",
+									"",
+									"var itemsCount = 0;",
+									"while(itemsLimitT > itemsCount){",
+									"    var orderIncId = parseInt(pm.environment.get('orderIncId'));",
+									"    orderIncId++;",
+									"    pm.environment.set('orderIncId', orderIncId);",
+									"    ",
+									"    var item = JSON.parse(itemSkeletonJson);",
+									"    item.entity.increment_id = orderIncId;",
+									"    items[itemsCount] = item;",
+									"    ",
+									"    itemsCount++;",
+									"}",
+									"",
+									"var itemsJsonString = JSON.stringify(items);",
+									"pm.environment.set('orderItems', itemsJsonString);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{orderItems}}"
+						},
+						"url": {
+							"raw": "{{URL}}rest/async/bulk/V1/orders/",
+							"host": [
+								"{{URL}}rest"
+							],
+							"path": [
+								"async",
+								"bulk",
+								"V1",
+								"orders",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Invoice Bulk",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4bcc2ca0-7ca2-4a82-89dc-18c0ccd294e9",
+								"exec": [
+									"var itemsLimitT = pm.environment.get('itemsLimit');",
+									"var items = [];",
+									"var itemSkeletonJson = '{\"entity\":{\"base_grand_total\":30,\"grand_total\":30,\"shipping_amount\":0,\"subtotal\":30,\"subtotal_incl_tax\":30,\"tax_amount\":0,\"total_qty\":1,\"order_id\":10,\"increment_id\":\"\",\"items\":[{\"base_price\":30,\"price\":30,\"row_total\":30,\"row_total_incl_tax\":30,\"sku\":\"test22_\",\"qty\":1}],\"extension_attributes\":{\"order_increment_id\":\"\"}}}';",
+									"",
+									"var itemsCount = 0;",
+									"",
+									"var orderIncId = parseInt(pm.environment.get('orderIncId'));",
+									"    orderIncId = orderIncId - itemsLimitT;//reset order increment to init value",
+									"    ",
+									"while(itemsLimitT > itemsCount){",
+									"    orderIncId++;",
+									"    pm.environment.set('orderIncId', orderIncId);",
+									"    ",
+									"    var invoiceIncId = parseInt(pm.environment.get('invoiceIncId'));",
+									"    invoiceIncId++;",
+									"    pm.environment.set('invoiceIncId', invoiceIncId);",
+									"    ",
+									"    var item = JSON.parse(itemSkeletonJson);",
+									"    item.entity.increment_id = invoiceIncId;",
+									"    item.entity.extension_attributes.order_increment_id = orderIncId;",
+									"    items[itemsCount] = item;",
+									"    ",
+									"    itemsCount++;",
+									"}",
+									"",
+									"var itemsJsonString = JSON.stringify(items);",
+									"pm.environment.set('invoiceItems', itemsJsonString);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{invoiceItems}}"
+						},
+						"url": {
+							"raw": "{{URL}}rest/async/bulk/V1/invoices/",
+							"host": [
+								"{{URL}}rest"
+							],
+							"path": [
+								"async",
+								"bulk",
+								"V1",
+								"invoices",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Creditmemo Bulk",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "57693067-2252-4e6a-9316-94626889c788",
+								"exec": [
+									"var itemsLimitT = pm.environment.get('itemsLimit');",
+									"var items = [];",
+									"var itemSkeletonJson = '{\"entity\":{\"adjustment\":0,\"adjustment_negative\":0,\"adjustment_positive\":0,\"base_adjustment\":0,\"base_adjustment_negative\":0,\"base_adjustment_positive\":0,\"base_discount_amount\":0,\"base_grand_total\":0,\"base_discount_tax_compensation_amount\":0,\"base_shipping_amount\":0,\"base_shipping_incl_tax\":0,\"base_shipping_tax_amount\":0,\"base_subtotal\":0,\"base_subtotal_incl_tax\":0,\"base_tax_amount\":0,\"grand_total\":30,\"shipping_address_id\":2,\"state\":2,\"subtotal\":30,\"subtotal_incl_tax\":30,\"increment_id\":\"\",\"items\":[{\"base_price\":30,\"price\":30,\"qty\":1,\"row_total\":30,\"row_total_incl_tax\":30,\"sku\":\"test22_\"}],\"extension_attributes\":{\"order_increment_id\":\"\"}}}';",
+									"",
+									"var itemsCount = 0;",
+									"",
+									"var orderIncId = parseInt(pm.environment.get('orderIncId'));",
+									"    orderIncId = orderIncId - itemsLimitT;//reset order increment to init value",
+									"    ",
+									"while(itemsLimitT > itemsCount){",
+									"    orderIncId++;",
+									"    pm.environment.set('orderIncId', orderIncId);",
+									"    ",
+									"    var creditmemoIncId = parseInt(pm.environment.get('creditmemoIncId'));",
+									"    creditmemoIncId++;",
+									"    pm.environment.set('creditmemoIncId', creditmemoIncId);",
+									"    ",
+									"    var item = JSON.parse(itemSkeletonJson);",
+									"    item.entity.increment_id = creditmemoIncId;",
+									"    item.entity.extension_attributes.order_increment_id = orderIncId;",
+									"    items[itemsCount] = item;",
+									"    ",
+									"    itemsCount++;",
+									"}",
+									"",
+									"var itemsJsonString = JSON.stringify(items);",
+									"pm.environment.set('creditmemoItems', itemsJsonString);",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{{creditmemoItems}}"
+						},
+						"url": {
+							"raw": "{{URL}}rest/async/bulk/V1/creditmemo/",
+							"host": [
+								"{{URL}}rest"
+							],
+							"path": [
+								"async",
+								"bulk",
+								"V1",
+								"creditmemo",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}rest/V1/orders?searchCriteria[filterGroups][0][filters][0][field]=increment_id&searchCriteria[filterGroups][0][filters][0][value]=0&searchCriteria[filterGroups][0][filters][0][conditionType]=eq",
+							"host": [
+								"{{URL}}rest"
+							],
+							"path": [
+								"V1",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "searchCriteria[filterGroups][0][filters][0][field]",
+									"value": "increment_id"
+								},
+								{
+									"key": "searchCriteria[filterGroups][0][filters][0][value]",
+									"value": "0"
+								},
+								{
+									"key": "searchCriteria[filterGroups][0][filters][0][conditionType]",
+									"value": "eq"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Invoice",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}rest/V1/invoices?searchCriteria[filterGroups][0][filters][0][field]=entity_id&searchCriteria[filterGroups][0][filters][0][value]=0&searchCriteria[filterGroups][0][filters][0][conditionType]=gteq",
+							"host": [
+								"{{URL}}rest"
+							],
+							"path": [
+								"V1",
+								"invoices"
+							],
+							"query": [
+								{
+									"key": "searchCriteria[filterGroups][0][filters][0][field]",
+									"value": "entity_id"
+								},
+								{
+									"key": "searchCriteria[filterGroups][0][filters][0][value]",
+									"value": "0"
+								},
+								{
+									"key": "searchCriteria[filterGroups][0][filters][0][conditionType]",
+									"value": "gteq"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Creditmemo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}rest/V1/creditmemos?searchCriteria[filterGroups][0][filters][0][field]=entity_id&searchCriteria[filterGroups][0][filters][0][value]=0&searchCriteria[filterGroups][0][filters][0][conditionType]=gteq",
+							"host": [
+								"{{URL}}rest"
+							],
+							"path": [
+								"V1",
+								"creditmemos"
+							],
+							"query": [
+								{
+									"key": "searchCriteria[filterGroups][0][filters][0][field]",
+									"value": "entity_id"
+								},
+								{
+									"key": "searchCriteria[filterGroups][0][filters][0][value]",
+									"value": "0"
+								},
+								{
+									"key": "searchCriteria[filterGroups][0][filters][0][conditionType]",
+									"value": "gteq"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "d8b3589f-cb60-43d7-85fa-f056abda799b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "a87b1784-912e-41b1-9c53-73dfe352ad7a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
